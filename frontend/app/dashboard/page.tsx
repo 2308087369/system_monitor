@@ -10,6 +10,7 @@ import { ServiceStatusBadge } from '@/components/service-status-badge';
 import { Server, LogOut, Plus, RefreshCw, Activity, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { SettingsButton } from '@/components/settings-button';
+import { useLanguage } from '@/lib/language-context';
 
 export default function DashboardPage() {
   const { user, logout, isLoading: authLoading } = useAuth();
@@ -17,6 +18,7 @@ export default function DashboardPage() {
   const [services, setServices] = useState<ServiceInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -75,12 +77,12 @@ export default function DashboardPage() {
                 <Server className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-neutral-900">Service Monitor</h1>
+                <h1 className="text-xl font-semibold text-neutral-900">{t('service_monitor_title')}</h1>
                 <p className="text-sm text-neutral-600">
-                  Logged in as <span className="font-medium">{user.username}</span>
+                  {t('logged_in_as')} <span className="font-medium">{user.username}</span>
                   {user.role === 'admin' && (
                     <span className="ml-2 text-xs px-2 py-0.5 bg-neutral-100 text-neutral-700 rounded-full border border-neutral-200">
-                      Admin
+                      {t('admin')}
                     </span>
                   )}
                 </p>
@@ -94,7 +96,7 @@ export default function DashboardPage() {
               className="border-neutral-300 hover:bg-neutral-100"
               >
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign out
+                {t('sign_out')}
               </Button>
             </div>
           </div>
@@ -109,7 +111,7 @@ export default function DashboardPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-neutral-600">Total Services</p>
+                  <p className="text-sm text-neutral-600">{t('total_services')}</p>
                   <p className="text-3xl font-semibold text-neutral-900 mt-1">{services.length}</p>
                 </div>
                 <Activity className="w-8 h-8 text-neutral-400" />
@@ -121,7 +123,7 @@ export default function DashboardPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-700">Active</p>
+                  <p className="text-sm text-green-700">{t('active')}</p>
                   <p className="text-3xl font-semibold text-green-800 mt-1">{activeCount}</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
@@ -135,7 +137,7 @@ export default function DashboardPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-red-700">Failed</p>
+                  <p className="text-sm text-red-700">{t('failed')}</p>
                   <p className="text-3xl font-semibold text-red-800 mt-1">{failedCount}</p>
                 </div>
                 <AlertCircle className="w-8 h-8 text-red-600" />
@@ -147,7 +149,7 @@ export default function DashboardPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-neutral-600">Inactive</p>
+                  <p className="text-sm text-neutral-600">{t('inactive')}</p>
                   <p className="text-3xl font-semibold text-neutral-700 mt-1">{inactiveCount}</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-neutral-300 flex items-center justify-center">
@@ -160,7 +162,7 @@ export default function DashboardPage() {
 
         {/* Actions */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-neutral-900">Monitored Services</h2>
+          <h2 className="text-lg font-semibold text-neutral-900">{t('monitored_services')}</h2>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -169,14 +171,14 @@ export default function DashboardPage() {
               className="border-neutral-300 hover:bg-neutral-100"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              Refresh
+              {t('refresh')}
             </Button>
             <Button
               onClick={() => router.push('/monitor-status')}
               className="bg-neutral-900 hover:bg-neutral-800 text-white"
             >
               <Activity className="w-4 h-4 mr-2" />
-              Status Overview
+              {t('status_overview')}
             </Button>
             {user.role === 'admin' && (
               <Button
@@ -184,7 +186,7 @@ export default function DashboardPage() {
                 className="bg-neutral-900 hover:bg-neutral-800 text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Manage Services
+                {t('manage_services')}
               </Button>
             )}
           </div>
@@ -201,21 +203,21 @@ export default function DashboardPage() {
         {isLoading ? (
           <Card className="border-neutral-200">
             <CardContent className="py-12 text-center text-neutral-600">
-              Loading services...
+              {t('loading_services')}
             </CardContent>
           </Card>
         ) : services.length === 0 ? (
           <Card className="border-neutral-200">
             <CardContent className="py-12 text-center">
               <Activity className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
-              <p className="text-neutral-600 mb-4">No services are being monitored yet</p>
+              <p className="text-neutral-600 mb-4">{t('no_services_monitored')}</p>
               {user.role === 'admin' && (
                 <Button
                   onClick={() => router.push('/services')}
                   className="bg-neutral-900 hover:bg-neutral-800 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Services
+                  {t('add_services')}
                 </Button>
               )}
             </CardContent>
@@ -233,13 +235,13 @@ export default function DashboardPage() {
                       </div>
                       <p className="text-sm text-neutral-600 mb-2">{service.description}</p>
                       <div className="flex gap-4 text-xs text-neutral-500">
-                        <span>Enabled: <span className="font-medium text-neutral-700">{service.enabled}</span></span>
-                        <span>Loaded: <span className="font-medium text-neutral-700">{service.loaded ? 'Yes' : 'No'}</span></span>
+                        <span>{t('enabled')}: <span className="font-medium text-neutral-700">{service.enabled}</span></span>
+                        <span>{t('loaded')}: <span className="font-medium text-neutral-700">{service.loaded ? t('yes') : t('no')}</span></span>
                       </div>
                     </div>
                     <Link href={`/service/${encodeURIComponent(service.name)}`}>
                       <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-neutral-100">
-                        View Details
+                        {t('view_details')}
                       </Button>
                     </Link>
                   </div>

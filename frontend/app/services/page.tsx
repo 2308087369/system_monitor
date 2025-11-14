@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Plus, Trash2, Search, Server } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
 
 interface AvailableService {
   name: string;
@@ -28,6 +29,7 @@ export default function ServicesPage() {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) {
@@ -118,14 +120,14 @@ export default function ServicesPage() {
                 className="hover:bg-neutral-100"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
+                {t('back')}
               </Button>
               <div className="w-10 h-10 rounded-lg bg-neutral-900 flex items-center justify-center">
                 <Server className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-neutral-900">Manage Services</h1>
-                <p className="text-sm text-neutral-600">Add or remove services from monitoring</p>
+                <h1 className="text-xl font-semibold text-neutral-900">{t('manage_services')}</h1>
+                <p className="text-sm text-neutral-600">{t('manage_services_subtitle')}</p>
               </div>
             </div>
           </div>
@@ -140,7 +142,7 @@ export default function ServicesPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
               <Input
                 type="text"
-                placeholder="Search services..."
+                placeholder={t('search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') setPage(1); }}
@@ -164,7 +166,7 @@ export default function ServicesPage() {
                   onClick={() => { setPage(p => Math.max(1, p-1)); }}
                   className="border-neutral-300"
                 >
-                  上一页
+                  {t('previous_page')}
                 </Button>
                 <span className="text-sm text-neutral-600">第 {page} / 共 {totalPages} 页</span>
                 <Button
@@ -174,7 +176,7 @@ export default function ServicesPage() {
                   onClick={() => { setPage(p => Math.min(totalPages, p+1)); }}
                   className="border-neutral-300"
                 >
-                  下一页
+                  {t('next_page')}
                 </Button>
               </div>
             </div>
@@ -191,13 +193,13 @@ export default function ServicesPage() {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Card className="border-neutral-200">
             <CardContent className="pt-6">
-              <p className="text-sm text-neutral-600">Available Services</p>
+              <p className="text-sm text-neutral-600">{t('available_services')}</p>
               <p className="text-2xl font-semibold text-neutral-900 mt-1">{availableServices.length}</p>
             </CardContent>
           </Card>
           <Card className="border-neutral-200">
             <CardContent className="pt-6">
-              <p className="text-sm text-neutral-600">Monitored Services</p>
+              <p className="text-sm text-neutral-600">{t('monitored_services_count')}</p>
               <p className="text-2xl font-semibold text-neutral-900 mt-1">{monitoredServices.length}</p>
             </CardContent>
           </Card>
@@ -207,7 +209,7 @@ export default function ServicesPage() {
         {isLoading ? (
           <Card className="border-neutral-200">
             <CardContent className="py-12 text-center text-neutral-600">
-              Loading services...
+              {t('loading_services')}
             </CardContent>
           </Card>
         ) : (
@@ -223,14 +225,14 @@ export default function ServicesPage() {
                           <h3 className="text-sm font-semibold text-neutral-900">{service.name}</h3>
                           {isMonitored && (
                             <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full border border-green-200">
-                              Monitored
+                              {t('monitored_badge')}
                             </span>
                           )}
                         </div>
                         <p className="text-xs text-neutral-600 mb-1">{service.description}</p>
                         <div className="flex gap-3 text-xs text-neutral-500">
-                          <span>Enabled: <span className="font-medium text-neutral-700">{service.enabled}</span></span>
-                          <span>Loaded: <span className="font-medium text-neutral-700">{service.loaded ? 'Yes' : 'No'}</span></span>
+                          <span>{t('enabled')}: <span className="font-medium text-neutral-700">{service.enabled}</span></span>
+                          <span>{t('loaded')}: <span className="font-medium text-neutral-700">{service.loaded ? t('yes') : t('no')}</span></span>
                         </div>
                       </div>
                       {isMonitored ? (
@@ -241,7 +243,7 @@ export default function ServicesPage() {
                           className="border-red-300 text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="w-3 h-3 mr-1.5" />
-                          Remove
+                          {t('remove')}
                         </Button>
                       ) : (
                         <Button
@@ -251,7 +253,7 @@ export default function ServicesPage() {
                           className="border-neutral-300 hover:bg-neutral-100"
                         >
                           <Plus className="w-3 h-3 mr-1.5" />
-                          Add
+                          {t('add')}
                         </Button>
                       )}
                     </div>
@@ -264,9 +266,9 @@ export default function ServicesPage() {
                 <CardContent className="py-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm text-neutral-600">未在可用列表中找到</div>
+                      <div className="text-sm text-neutral-600">{t('not_found_title')}</div>
                       <div className="text-sm text-neutral-900 font-semibold mt-1">{searchQuery}</div>
-                      <div className="text-xs text-neutral-500 mt-1">您仍可尝试直接添加至监控，后端会校验服务是否存在</div>
+                      <div className="text-xs text-neutral-500 mt-1">{t('not_found_tip')}</div>
                     </div>
                     <Button
                       variant="outline"
@@ -275,7 +277,7 @@ export default function ServicesPage() {
                       className="border-neutral-300 hover:bg-neutral-100"
                     >
                       <Plus className="w-3 h-3 mr-1.5" />
-                      直接添加
+                      {t('add_directly')}
                     </Button>
                   </div>
                 </CardContent>
