@@ -1,0 +1,70 @@
+# 依赖和环境
+/.venv
+/node_modules
+/frontend/node_modules/
+/frontend/.next/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 数据库和敏感文件
+/users.db
+*.db
+*.sqlite
+*.sqlite3
+# 但保留示例数据库
+!users.example.db
+monitored_services.json
+
+# 环境变量文件（包含敏感信息）
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+
+# 日志文件
+*.log
+/logs
+/scripts/run/
+
+# 构建输出
+/dist
+/build
+/.next
+/next-env.d.ts
+
+# IDE和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 临时文件
+/tmp
+/temp
+*.tmp
+*.temp
+
+# 其他敏感文件
+/filebrowser.db
+/suspicious-*.bin
+/service-account-*.json
+*.pem
+*.key
+*.crt
+
+# 部署相关（可选，根据需求）
+# /scripts
+
+# 备份文件
+*.bak
+*.backup
+*.old
