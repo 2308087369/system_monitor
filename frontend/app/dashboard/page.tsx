@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ServiceStatusBadge } from '@/components/service-status-badge';
 import { Server, LogOut, Plus, RefreshCw, Activity, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { SettingsButton } from '@/components/settings-button';
 
 export default function DashboardPage() {
   const { user, logout, isLoading: authLoading } = useAuth();
@@ -85,14 +86,17 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
-            <Button
+            <div className="flex gap-2">
+              <SettingsButton />
+              <Button
               variant="outline"
               onClick={handleLogout}
               className="border-neutral-300 hover:bg-neutral-100"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign out
-            </Button>
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign out
+              </Button>
+            </div>
           </div>
         </div>
       </header>

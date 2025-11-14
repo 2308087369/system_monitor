@@ -40,14 +40,14 @@ pip install fastapi uvicorn pydantic starlette
 
 ### Deployment
 ```bash
-# Deploy to production (ports: backend 6996, frontend 6997)
-./scripts/deploy.sh prod
+#后端修改后重新启动服务
+sudo systemctl restart system_monitor-backend.service && sleep 1 && systemctl status --no-pager system_monitor-backend.service | head -n 30
 
-# Deploy to formal environment (ports: backend 6994, frontend 6995)
-./scripts/deploy.sh formal
 
-# Stop all services
-./scripts/stop.sh
+
+'''bash
+#前端修改后重新启动服务
+pnpm --dir /gcl/my_project/system_monitor/frontend build && sudo systemctl restart system_monitor-frontend.service && sleep 1 && systemctl status --no-pager system_monitor-frontend.service | head -n 30
 ```
 
 ## Architecture

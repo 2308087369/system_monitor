@@ -130,11 +130,13 @@ export default function MonitorStatusPage() {
     const names = filtered;
     const taskUsed = names.map(n => {
       const s = data[n];
-      return s?.tasks ?? 0;
+      const v = s?.tasks ?? 0;
+      return v === 0 ? 0.0001 : v;
     });
     const taskLimit = names.map(n => {
       const s = data[n];
-      return s?.tasksLimit ?? 0;
+      const v = s?.tasksLimit ?? 0;
+      return v === 0 ? 0.0001 : v;
     });
     const taskPercent = names.map((_, i) => {
       const used = taskUsed[i];
@@ -146,13 +148,11 @@ export default function MonitorStatusPage() {
       const s = data[n];
       const m = (s?.memory || '').trim();
       const mm = m.match(/([0-9.]+)\s*([GMK])/i);
-      if (!mm) return 0;
+      if (!mm) return 0.0001;
       const val = parseFloat(mm[1]);
       const unit = mm[2].toUpperCase();
-      if (unit === 'G') return val * 1024; // MB
-      if (unit === 'M') return val; // MB
-      if (unit === 'K') return val / 1024; // MB
-      return val;
+      const mb = unit === 'G' ? val * 1024 : unit === 'M' ? val : unit === 'K' ? val / 1024 : val;
+      return mb === 0 ? 0.0001 : mb;
     });
     const cpuHours = names.map(n => {
       const s = data[n];
@@ -201,7 +201,7 @@ export default function MonitorStatusPage() {
       legend: { data: ['Used', 'Limit', 'Percent'] },
       xAxis: [{ type: 'category', data: names }],
       yAxis: [
-        { type: 'value', name: 'Threads' },
+        { type: 'log', name: 'Threads (log)', logBase: 10 },
         { type: 'value', name: '%', max: 100 }
       ],
       series: [
@@ -215,7 +215,7 @@ export default function MonitorStatusPage() {
       tooltip: { trigger: 'axis' },
       toolbox,
       xAxis: { type: 'category', data: names },
-      yAxis: { type: 'value', name: 'MB' },
+      yAxis: { type: 'log', name: 'MB (log)', logBase: 10 },
       series: [{ name: 'Memory (MB)', type: 'bar', data: memoryVals, itemStyle: { color: '#2563eb' } }],
     });
 
