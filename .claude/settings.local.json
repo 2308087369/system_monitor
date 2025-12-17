@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(chmod:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(xargs -I {} sh -c 'echo $(git cat-file -s {}):{}')",
+      "Bash(git verify-pack:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git reflog:*)",
+      "Bash(git gc:*)",
+      "Bash(echo \"# 清理本地构建文件和依赖\necho ''🧹 清理本地构建文件和依赖...''\n\n# 清理前端构建文件和依赖\nif [ -d \"frontend/node_modules\" ]; then\n    echo ''🗑️  删除 frontend/node_modules...''\n    rm -rf frontend/node_modules\nfi\n\nif [ -d \"frontend/.next\" ]; then\n    echo ''🗑️  删除 frontend/.next...''\n    rm -rf frontend/.next\nfi\n\n# 清理Python缓存\nfind . -type d -name \"__pycache__\" -exec rm -rf {} + 2>/dev/null || true\nfind . -name \"*.pyc\" -delete 2>/dev/null || true\n\n# 清理日志文件\nif [ -d \"scripts/run\" ]; then\n    echo ''🗑️  清理日志文件...''\n    rm -f scripts/run/*.log\nfi\n\necho ''✅ 清理完成！''\necho ''💡 提示：运行 ./scripts/setup.sh dev 重新安装依赖''\")",
+      "Bash(./scripts/cleanup.sh:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
