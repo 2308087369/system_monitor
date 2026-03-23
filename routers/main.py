@@ -480,19 +480,45 @@ async def control_service_endpoint(service_name: str, action: str, admin: Dict =
     return result
 
 @app.get("/service-logs/{service_name}")
-async def get_service_logs(service_name: str, lines: int = Query(50, ge=1, le=500), user: Dict = Depends(get_current_user)):
+async def get_service_logs(
+    service_name: str, 
+    lines: int = Query(50, ge=0),
+    since: Optional[str] = None,
+    until: Optional[str] = None,
+    priority: Optional[str] = None,
+    grep: Optional[str] = None,
+    user: Dict = Depends(get_current_user)
+):
     """获取服务的日志"""
     if not service_name.endswith('.service'):
         service_name += '.service'
     
     try:
+        cmd = ['sudo', 'journalctl', '-u', service_name, '--no-pager']
+        
+        if lines > 0:
+            cmd.extend(['-n', str(lines)])
+            
+        if since:
+            cmd.extend(['--since', since])
+            
+        if until:
+            cmd.extend(['--until', until])
+            
+        if priority:
+            cmd.extend(['-p', priority])
+            
+        if grep:
+            cmd.extend(['--grep', grep])
+
         result = subprocess.run(
-            ['sudo', 'journalctl', '-u', service_name, '-n', str(lines), '--no-pager'],
+            cmd,
             capture_output=True, text=True, timeout=15
         )
         
-        if result.returncode == 0:
-            return {"logs": result.stdout.split('\n')}
+        if result.returncode == 0 or (result.returncode == 1 and not result.stderr.strip()):
+            logs = result.stdout.split('\n') if result.stdout else []
+            return {"logs": logs}
         else:
             return {"logs": [], "error": result.stderr}
     except subprocess.TimeoutExpired:

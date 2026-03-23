@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ServiceStatusBadge } from '@/components/service-status-badge';
 import { ArrowLeft, Play, Square, RotateCw, RefreshCw, Terminal } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ServiceDetailPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -23,6 +26,12 @@ export default function ServiceDetailPage() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Log filters
+  const [logLines, setLogLines] = useState<number>(50);
+  const [logSince, setLogSince] = useState<string>('all');
+  const [logPriority, setLogPriority] = useState<string>('all');
+  const [logGrep, setLogGrep] = useState<string>('');
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
@@ -35,6 +44,12 @@ export default function ServiceDetailPage() {
       loadLogs();
     }
   }, [user, serviceName]);
+
+  useEffect(() => {
+    if (user && !isLoading) {
+      loadLogs();
+    }
+  }, [logLines, logSince, logPriority]);
 
   const loadServiceDetails = async () => {
     try {
@@ -52,7 +67,11 @@ export default function ServiceDetailPage() {
   const loadLogs = async () => {
     try {
       setIsLoadingLogs(true);
-      const data = await apiClient.getServiceLogs(serviceName, 100);
+      const data = await apiClient.getServiceLogs(serviceName, logLines, {
+        since: logSince !== 'all' ? logSince : undefined,
+        priority: logPriority !== 'all' ? logPriority : undefined,
+        grep: logGrep || undefined,
+      });
       setLogs(data.logs || []);
     } catch (err) {
       console.error('Failed to load logs:', err);
@@ -240,7 +259,9 @@ export default function ServiceDetailPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-lg">Service Logs</CardTitle>
-                <CardDescription>Recent journal entries (last 100 lines)</CardDescription>
+                <CardDescription>
+                  {logLines === 0 ? 'All journal entries' : `Recent journal entries (last ${logLines} lines)`}
+                </CardDescription>
               </div>
               <Button
                 variant="outline"
@@ -254,7 +275,61 @@ export default function ServiceDetailPage() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label>Lines</Label>
+                <Select value={logLines.toString()} onValueChange={(v) => setLogLines(parseInt(v))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Lines" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="50">Last 50 lines</SelectItem>
+                    <SelectItem value="100">Last 100 lines</SelectItem>
+                    <SelectItem value="500">Last 500 lines</SelectItem>
+                    <SelectItem value="0">All logs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Time</Label>
+                <Select value={logSince} onValueChange={setLogSince}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All time</SelectItem>
+                    <SelectItem value="1 hour ago">Last 1 hour</SelectItem>
+                    <SelectItem value="24 hours ago">Last 24 hours</SelectItem>
+                    <SelectItem value="today">Today</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Level</Label>
+                <Select value={logPriority} onValueChange={setLogPriority}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All levels" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All levels</SelectItem>
+                    <SelectItem value="info">Info</SelectItem>
+                    <SelectItem value="warning">Warning</SelectItem>
+                    <SelectItem value="err">Error</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Search Content</Label>
+                <Input 
+                  placeholder="Filter by keyword..." 
+                  value={logGrep}
+                  onChange={(e) => setLogGrep(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && loadLogs()}
+                />
+              </div>
+            </div>
+
             <div className="bg-neutral-900 rounded-lg p-4 font-mono text-xs text-neutral-100 overflow-x-auto max-h-96 overflow-y-auto">
               {isLoadingLogs ? (
                 <div className="text-neutral-400">Loading logs...</div>

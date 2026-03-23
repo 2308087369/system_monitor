@@ -156,8 +156,15 @@ class APIClient {
     });
   }
 
-  async getServiceLogs(serviceName: string, lines: number = 50): Promise<{ logs: string[]; error?: string }> {
-    return this.request(`/service-logs/${serviceName}?lines=${lines}`);
+  async getServiceLogs(serviceName: string, lines: number = 50, filters?: { since?: string; until?: string; priority?: string; grep?: string }): Promise<{ logs: string[]; error?: string }> {
+    let url = `/service-logs/${serviceName}?lines=${lines}`;
+    if (filters) {
+      if (filters.since) url += `&since=${encodeURIComponent(filters.since)}`;
+      if (filters.until) url += `&until=${encodeURIComponent(filters.until)}`;
+      if (filters.priority) url += `&priority=${encodeURIComponent(filters.priority)}`;
+      if (filters.grep) url += `&grep=${encodeURIComponent(filters.grep)}`;
+    }
+    return this.request(url);
   }
 
   async getHealth(): Promise<{ status: string; timestamp: string; monitored_services_count: number }> {
